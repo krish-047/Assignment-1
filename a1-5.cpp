@@ -107,7 +107,7 @@ int main() {
     cin >> n;
 
     if (cin.fail() || n <= 0) {
-        cout << "Invalid input. Please enter a positive integer." << endl;
+        cout << "Invalid Input" << endl;
         return 1;
     }
 
