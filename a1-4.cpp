@@ -1,135 +1,92 @@
 #include <iostream>
-
+#include <vector>
+#include <stdexcept>
 using namespace std;
 
-// Stack class definition
-class Stack {
-    int* arr;
-    int top;
-    int capacity;
-
-public:
-    Stack(int size) {
-        arr = new int[size];
-        capacity = size;
-        top = -1;
+double findMedianCombined(const vector<int>& scores1, const vector<int>& scores2) {
+    int n = scores1.size();  // Number of students in section 1
+    int m = scores2.size();  // Number of students in section 2
+    int total = n + m;
+    
+    if (total == 0) {
+        throw invalid_argument("Both score lists are empty.");
     }
-
-    ~Stack() {
-        delete[] arr;
-    }
-
-    // Function to add an element to the stack
-    void push(int x) {
-        if (isFull()) {
-            cout << "Stack Overflow: Unable to push " << x << endl;
-            return;
-        }
-        arr[++top] = x;
-    }
-
-    // Function to pop the top element
-    int pop() {
-        if (isEmpty()) {
-            cout << "Stack Underflow: Unable to pop" << endl;
-            return -1; // Return a sentinel value for error
-        }
-        return arr[top--];
-    }
-
-    // Function to display the elements of the stack
-    void display() const {
-        if (isEmpty()) {
-            cout << "Empty";
+    
+    // Initialize two pointers for each section
+    int i = 0, j = 0;
+    vector<int> merged;
+    
+    // Merge process: similar to merge sort
+    while (i < n && j < m) {
+        if (scores1[i] <= scores2[j]) {
+            merged.push_back(scores1[i]);
+            i++;
         } else {
-            for (int i = 0; i <= top; i++) {
-                cout << arr[i] << " ";
-            }
+            merged.push_back(scores2[j]);
+            j++;
         }
-        cout << endl;
-    }
-
-private:
-    // Function to check if the stack is full
-    bool isFull() const {
-        return top == capacity - 1;
-    }
-
-    // Function to check if the stack is empty
-    bool isEmpty() const {
-        return top == -1;
-    }
-};
-
-// Stacks for the towers
-Stack* A;
-Stack* B;
-Stack* C;
-
-// Function to display the contents of the towers
-void displayTowers() {
-    cout << "Tower A: ";
-    A->display();
-    cout << "Tower B: ";
-    B->display();
-    cout << "Tower C: ";
-    C->display();
-    cout << "\n";
-}
-
-// Recursive function to rearrange disks
-void rearrangeDisks(int n, Stack& source, Stack& target, Stack& auxiliary, char from, char to, char aux) {
-    if (n == 1) {
-        // Move the disk from source to target
-        int disk = source.pop();
-        target.push(disk);
-        cout << "Move disk " << disk << " from " << from << " to " << to << endl;
-        displayTowers();
-        return;
     }
     
-    // Move n-1 disks from source to auxiliary
-    rearrangeDisks(n - 1, source, auxiliary, target, from, aux, to);
-    
-    // Move the nth disk from source to target
-    int disk = source.pop();
-    target.push(disk);
-    cout << "Move disk " << disk << " from " << from << " to " << to << endl;
-    displayTowers();
+    // Append remaining elements from section 1
+    while (i < n) {
+        merged.push_back(scores1[i]);
+        i++;
+    }
 
-    // Move the n-1 disks from auxiliary to target
-    rearrangeDisks(n - 1, auxiliary, target, source, aux, to, from);
+    // Append remaining elements from section 2
+    while (j < m) {
+        merged.push_back(scores2[j]);
+        j++;
+    }
+    
+    // Find the median from the merged array
+    if (total % 2 == 1) {
+        // Odd number of students
+        return merged[total / 2];
+    } else {
+        // Even number of students
+        int mid1 = merged[(total / 2) - 1];
+        int mid2 = merged[total / 2];
+        return (mid1 + mid2) / 2.0;
+    }
 }
 
 int main() {
-    int n;
-    //cout << "Enter the number of disks: ";
-    cin >> n;
+    vector<int> scores1, scores2;
+    int n, m, score;
 
-    if (cin.fail() || n <= 0) {
-        cout << "Invalid input. Please enter a positive integer." << endl;
+    // Input for scores1
+    //cout << "Enter the size of the array1: ";
+    cin >> n;
+    //cout << "The array elements are:" << endl;
+    for (int i = 0; i < n; i++) {
+        
+        cin >> score;
+        scores1.push_back(score);
+    }
+
+    // Input for scores2
+    //cout << "Enter the size of the array2: ";
+    cin >> m;
+    //cout << "The array elements are:" << endl;
+    
+    for (int i = 0; i < m; i++) {
+        
+        cin >> score;
+        scores2.push_back(score);
+    }
+
+    if (scores1.size() == 0 || scores2.size() == 0) {
+        cout << "Empty Array" << endl;
         return 1;
     }
 
-    else
-    {
-
-      A = new Stack(n);
-      B = new Stack(n);
-      C = new Stack(n);
-
-      for (int i = n; i >= 1; i--) {
-        A->push(i);
-      }
-
-      displayTowers();
-
-      rearrangeDisks(n, *A, *C, *B, 'A', 'C', 'B');
-
-      delete A;
-      delete B;
-      delete C;
-
-     return 0;
+    try {
+        double median = findMedianCombined(scores1, scores2);
+        cout << "Median = " << median << endl;
+    } catch (const invalid_argument& e) {
+        cerr << e.what() << endl;
     }
+
+    return 0;
 }
