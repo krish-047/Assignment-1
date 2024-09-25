@@ -1,54 +1,86 @@
 #include <iostream>
-
+#include <vector>
+#include <stdexcept>
 using namespace std;
 
-//write your code here
-
-// Function to find the median
-double findMedian(int arr1[], int size1, int arr2[], int size2) {
+double findMedianCombined(const vector<int>& scores1, const vector<int>& scores2) {
+    int n = scores1.size();  // Number of students in section 1
+    int m = scores2.size();  // Number of students in section 2
+    int total = n + m;
     
-// Your code here
+    if (total == 0) {
+        throw invalid_argument("Both score lists are empty.");
+    }
+    
+    // Initialize two pointers for each section
+    int i = 0, j = 0;
+    vector<int> merged;
+    
+    // Merge process: similar to merge sort
+    while (i < n && j < m) {
+        if (scores1[i] <= scores2[j]) {
+            merged.push_back(scores1[i]);
+            i++;
+        } else {
+            merged.push_back(scores2[j]);
+            j++;
+        }
+    }
+    
+    // Append remaining elements from section 1
+    while (i < n) {
+        merged.push_back(scores1[i]);
+        i++;
+    }
 
+    // Append remaining elements from section 2
+    while (j < m) {
+        merged.push_back(scores2[j]);
+        j++;
+    }
+    
+    // Find the median from the merged array
+    if (total % 2 == 1) {
+        // Odd number of students
+        return merged[total / 2];
+    } else {
+        // Even number of students
+        int mid1 = merged[(total / 2) - 1];
+        int mid2 = merged[total / 2];
+        return (mid1 + mid2) / 2.0;
+    }
 }
 
-
 int main() {
-    // You can use cout statements, but ensure that you submit after commenting them out, as the autograder will otherwise mistake it for your actual output
-    // Everything else in the main function remains unchanged
-    
-    int size1;
-    // cout << "Enter the size of the array1: ";
-    cin >> size1;
+    vector<int> scores1, scores2;
+    int n, m, score;
 
-    int arr[size1];
-    // cout << "Enter " << size1 << " elements:" << endl;
-    for (int i = 0; i < size1; ++i) {
-        cin >> arr[i];
+    // Input for scores1
+    cout << "Enter the size of the array1: ";
+    cin >> n;
+    cout << "The array elements are:" << endl;
+    for (int i = 0; i < n; i++) {
+        
+        cin >> score;
+        scores1.push_back(score);
     }
 
-    // cout << "The array elements are: ";
-    // for (int i = 0; i < size1; ++i) {
-    //     cout << arr[i] << " ";
-    // }
-    // cout << endl;
-
-    int size2;
-    // cout << "Enter the size of the array2: ";
-    cin >> size2;
-
-    int arr1[size2];
-    // cout << "Enter " << size2 << " elements:" << endl;
-    for (int i = 0; i < size2; ++i) {
-        cin >> arr1[i];
+    // Input for scores2
+    cout << "Enter the size of the array2: ";
+    cin >> m;
+    cout << "The array elements are:" << endl;
+    for (int i = 0; i < m; i++) {
+        
+        cin >> score;
+        scores2.push_back(score);
     }
 
-    // cout << "The array elements are: ";
-    // for (int i = 0; i < size2; ++i) {
-    //     cout << arr1[i] << " ";
-    // }
-    // cout << endl;
-    
-    cout << "Median = " << findMedian(arr, size1, arr1, size2) << endl; // do not comment this out
-    
+    try {
+        double median = findMedianCombined(scores1, scores2);
+        cout << "The median is: " << median << endl;
+    } catch (const invalid_argument& e) {
+        cerr << e.what() << endl;
+    }
+
     return 0;
 }
