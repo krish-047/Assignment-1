@@ -48,7 +48,7 @@ double calculateMedianMerged(const vector<int>& classScores1, const vector<int>&
         // Even total number of scores
         int middle1 = combinedScores[(combinedSize / 2) - 1];
         int middle2 = combinedScores[combinedSize / 2];
-        return (middle1 + middle2) / 2.0;
+        return (middle1 + middle2) / 2.0;  // Use floating-point division to avoid integer truncation
     }
 }
 
