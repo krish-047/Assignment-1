@@ -62,18 +62,18 @@ private:
 };
 
 // Stacks representing the three towers
-Stack* towerX;
-Stack* towerY;
-Stack* towerZ;
+Stack* towerA;
+Stack* towerB;
+Stack* towerC;
 
 // Method to display the contents of all three towers
 void showAllTowers() {
-    cout << "Tower X: ";
-    towerX->outputStack();
-    cout << "Tower Y: ";
-    towerY->outputStack();
-    cout << "Tower Z: ";
-    towerZ->outputStack();
+    cout << "Tower A: ";
+    towerA->outputStack();
+    cout << "Tower B: ";
+    towerB->outputStack();
+    cout << "Tower C: ";
+    towerC->outputStack();
     cout << "\n";
 }
 
@@ -111,21 +111,21 @@ int main() {
         return 1;
     } else {
 
-      towerX = new Stack(diskCount);
-      towerY = new Stack(diskCount);
-      towerZ = new Stack(diskCount);
+      towerA = new Stack(diskCount);
+      towerB = new Stack(diskCount);
+      towerC = new Stack(diskCount);
 
       for (int i = diskCount; i >= 1; i--) {
-        towerX->insert(i);
+        towerA->insert(i);
       }
 
       showAllTowers();
 
-      moveDisks(diskCount, *towerX, *towerZ, *towerY, 'X', 'Z', 'Y');
+      moveDisks(diskCount, *towerA, *towerC, *towerB, 'A', 'C', 'B');
 
-      delete towerX;
-      delete towerY;
-      delete towerZ;
+      delete towerA;
+      delete towerB;
+      delete towerC;
 
      return 0;
     }
