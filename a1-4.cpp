@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+#include <iomanip>  // Include for setting precision
 using namespace std;
 
 // Function to calculate the median from two merged score lists
@@ -48,7 +49,7 @@ double calculateMedianMerged(const vector<int>& classScores1, const vector<int>&
         // Even total number of scores
         int middle1 = combinedScores[(combinedSize / 2) - 1];
         int middle2 = combinedScores[combinedSize / 2];
-        return (middle1 + middle2) / 2.0;  // Use floating-point division to avoid integer truncation
+        return (middle1 + middle2) / 2.0;  // Use floating-point division
     }
 }
 
@@ -83,7 +84,7 @@ int main() {
     // Try to calculate and print the median, handle potential errors
     try {
         double median = calculateMedianMerged(classScores1, classScores2);
-        cout << "Median = " << median << endl;
+        cout << fixed << setprecision(1) << median << endl;  // Set precision to 1 decimal place
     } catch (const invalid_argument& e) {
         cerr << e.what() << endl;
     }
