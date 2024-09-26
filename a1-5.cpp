@@ -2,133 +2,130 @@
 
 using namespace std;
 
-// Stack class definition
+// Class definition for the Stack data structure
 class Stack {
-    int* arr;
-    int top;
-    int capacity;
+    int* storage;
+    int currentIndex;
+    int maxSize;
 
 public:
     Stack(int size) {
-        arr = new int[size];
-        capacity = size;
-        top = -1;
+        storage = new int[size];
+        maxSize = size;
+        currentIndex = -1;
     }
 
     ~Stack() {
-        delete[] arr;
+        delete[] storage;
     }
 
-    // Function to add an element to the stack
-    void push(int x) {
-        if (isFull()) {
-            cout << "Stack Overflow: Unable to push " << x << endl;
+    // Method to insert an element onto the stack
+    void insert(int element) {
+        if (isAtCapacity()) {
+            cout << "Stack Overflow: Unable to insert " << element << endl;
             return;
         }
-        arr[++top] = x;
+        storage[++currentIndex] = element;
     }
 
-    // Function to pop the top element
-    int pop() {
+    // Method to remove the top element from the stack
+    int remove() {
         if (isEmpty()) {
-            cout << "Stack Underflow: Unable to pop" << endl;
-            return -1; // Return a sentinel value for error
+            cout << "Stack Underflow: Unable to remove" << endl;
+            return -1; // Return a special value to indicate error
         }
-        return arr[top--];
+        return storage[currentIndex--];
     }
 
-    // Function to display the elements of the stack
-    void display() const {
+    // Method to output the contents of the stack
+    void outputStack() const {
         if (isEmpty()) {
             cout << "Empty";
         } else {
-            for (int i = 0; i <= top; i++) {
-                cout << arr[i] << " ";
+            for (int i = 0; i <= currentIndex; i++) {
+                cout << storage[i] << " ";
             }
         }
         cout << endl;
     }
 
 private:
-    // Function to check if the stack is full
-    bool isFull() const {
-        return top == capacity - 1;
+    // Method to check if the stack has reached its maximum capacity
+    bool isAtCapacity() const {
+        return currentIndex == maxSize - 1;
     }
 
-    // Function to check if the stack is empty
+    // Method to check if the stack has no elements
     bool isEmpty() const {
-        return top == -1;
+        return currentIndex == -1;
     }
 };
 
-// Stacks for the towers
-Stack* A;
-Stack* B;
-Stack* C;
+// Stacks representing the three towers
+Stack* towerX;
+Stack* towerY;
+Stack* towerZ;
 
-// Function to display the contents of the towers
-void displayTowers() {
-    cout << "Tower A: ";
-    A->display();
-    cout << "Tower B: ";
-    B->display();
-    cout << "Tower C: ";
-    C->display();
+// Method to display the contents of all three towers
+void showAllTowers() {
+    cout << "Tower X: ";
+    towerX->outputStack();
+    cout << "Tower Y: ";
+    towerY->outputStack();
+    cout << "Tower Z: ";
+    towerZ->outputStack();
     cout << "\n";
 }
 
-// Recursive function to rearrange disks
-void rearrangeDisks(int n, Stack& source, Stack& target, Stack& auxiliary, char from, char to, char aux) {
-    if (n == 1) {
-        // Move the disk from source to target
-        int disk = source.pop();
-        target.push(disk);
-        cout << "Move disk " << disk << " from " << from << " to " << to << endl;
-        displayTowers();
+// Recursive method to move disks between towers
+void moveDisks(int count, Stack& startTower, Stack& endTower, Stack& helperTower, char fromTower, char toTower, char helpTower) {
+    if (count == 1) {
+        // Move a single disk from the starting tower to the destination tower
+        int disk = startTower.remove();
+        endTower.insert(disk);
+        cout << "Move disk " << disk << " from " << fromTower << " to " << toTower << endl;
+        showAllTowers();
         return;
     }
-    
-    // Move n-1 disks from source to auxiliary
-    rearrangeDisks(n - 1, source, auxiliary, target, from, aux, to);
-    
-    // Move the nth disk from source to target
-    int disk = source.pop();
-    target.push(disk);
-    cout << "Move disk " << disk << " from " << from << " to " << to << endl;
-    displayTowers();
 
-    // Move the n-1 disks from auxiliary to target
-    rearrangeDisks(n - 1, auxiliary, target, source, aux, to, from);
+    // Recursively move (count-1) disks from the start tower to the helper tower
+    moveDisks(count - 1, startTower, helperTower, endTower, fromTower, helpTower, toTower);
+    
+    // Move the nth disk from the starting tower to the destination tower
+    int disk = startTower.remove();
+    endTower.insert(disk);
+    cout << "Move disk " << disk << " from " << fromTower << " to " << toTower << endl;
+    showAllTowers();
+
+    // Recursively move (count-1) disks from the helper tower to the destination tower
+    moveDisks(count - 1, helperTower, endTower, startTower, helpTower, toTower, fromTower);
 }
 
 int main() {
-    int n;
+    int diskCount;
     //cout << "Enter the number of disks: ";
-    cin >> n;
+    cin >> diskCount;
 
-    if (cin.fail() || n <= 0) {
+    if (cin.fail() || diskCount <= 0) {
         cout << "Invalid Input" << endl;
         return 1;
-    }
+    } else {
 
-    else
-    {
+      towerX = new Stack(diskCount);
+      towerY = new Stack(diskCount);
+      towerZ = new Stack(diskCount);
 
-      A = new Stack(n);
-      B = new Stack(n);
-      C = new Stack(n);
-
-      for (int i = n; i >= 1; i--) {
-        A->push(i);
+      for (int i = diskCount; i >= 1; i--) {
+        towerX->insert(i);
       }
 
-      displayTowers();
+      showAllTowers();
 
-      rearrangeDisks(n, *A, *C, *B, 'A', 'C', 'B');
+      moveDisks(diskCount, *towerX, *towerZ, *towerY, 'X', 'Z', 'Y');
 
-      delete A;
-      delete B;
-      delete C;
+      delete towerX;
+      delete towerY;
+      delete towerZ;
 
      return 0;
     }
