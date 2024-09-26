@@ -3,86 +3,86 @@
 #include <stdexcept>
 using namespace std;
 
-double findMedianCombined(const vector<int>& scores1, const vector<int>& scores2) {
-    int n = scores1.size();  // Number of students in section 1
-    int m = scores2.size();  // Number of students in section 2
-    int total = n + m;
-    
-    if (total == 0) {
+// Function to calculate the median from two merged score lists
+double calculateMedianMerged(const vector<int>& classScores1, const vector<int>& classScores2) {
+    int size1 = classScores1.size();  // Total students in class 1
+    int size2 = classScores2.size();  // Total students in class 2
+    int combinedSize = size1 + size2;
+
+    if (combinedSize == 0) {
         throw invalid_argument("Both score lists are empty.");
     }
     
-    // Initialize two pointers for each section
-    int i = 0, j = 0;
-    vector<int> merged;
+    // Indices for iterating through the two lists
+    int index1 = 0, index2 = 0;
+    vector<int> combinedScores;
     
-    // Merge process: similar to merge sort
-    while (i < n && j < m) {
-        if (scores1[i] <= scores2[j]) {
-            merged.push_back(scores1[i]);
-            i++;
+    // Merge the two lists in sorted order
+    while (index1 < size1 && index2 < size2) {
+        if (classScores1[index1] <= classScores2[index2]) {
+            combinedScores.push_back(classScores1[index1]);
+            index1++;
         } else {
-            merged.push_back(scores2[j]);
-            j++;
+            combinedScores.push_back(classScores2[index2]);
+            index2++;
         }
     }
     
-    // Append remaining elements from section 1
-    while (i < n) {
-        merged.push_back(scores1[i]);
-        i++;
+    // Add remaining elements from classScores1, if any
+    while (index1 < size1) {
+        combinedScores.push_back(classScores1[index1]);
+        index1++;
     }
 
-    // Append remaining elements from section 2
-    while (j < m) {
-        merged.push_back(scores2[j]);
-        j++;
+    // Add remaining elements from classScores2, if any
+    while (index2 < size2) {
+        combinedScores.push_back(classScores2[index2]);
+        index2++;
     }
     
-    // Find the median from the merged array
-    if (total % 2 == 1) {
-        // Odd number of students
-        return merged[total / 2];
+    // Determine the median of the merged list
+    if (combinedSize % 2 == 1) {
+        // Odd total number of scores
+        return combinedScores[combinedSize / 2];
     } else {
-        // Even number of students
-        int mid1 = merged[(total / 2) - 1];
-        int mid2 = merged[total / 2];
-        return (mid1 + mid2) / 2.0;
+        // Even total number of scores
+        int middle1 = combinedScores[(combinedSize / 2) - 1];
+        int middle2 = combinedScores[combinedSize / 2];
+        return (middle1 + middle2) / 2.0;
     }
 }
 
 int main() {
-    vector<int> scores1, scores2;
-    int n, m, score;
+    vector<int> classScores1, classScores2;
+    int size1, size2, score;
 
-    // Input for scores1
-    //cout << "Enter the size of the array1: ";
-    cin >> n;
-    //cout << "The array elements are:" << endl;
-    for (int i = 0; i < n; i++) {
-        
+    // Input for classScores1
+    //cout << "Enter the number of students in class 1: ";
+    cin >> size1;
+    //cout << "Enter the scores for class 1:" << endl;
+    for (int i = 0; i < size1; i++) {
         cin >> score;
-        scores1.push_back(score);
+        classScores1.push_back(score);
     }
 
-    // Input for scores2
-    //cout << "Enter the size of the array2: ";
-    cin >> m;
-    //cout << "The array elements are:" << endl;
-    
-    for (int i = 0; i < m; i++) {
-        
+    // Input for classScores2
+    //cout << "Enter the number of students in class 2: ";
+    cin >> size2;
+    //cout << "Enter the scores for class 2:" << endl;
+    for (int i = 0; i < size2; i++) {
         cin >> score;
-        scores2.push_back(score);
+        classScores2.push_back(score);
     }
 
-    if (scores1.size() == 0 || scores2.size() == 0) {
+    // Handle empty score lists
+    if (classScores1.empty() || classScores2.empty()) {
         cout << "Empty Array" << endl;
         return 1;
     }
 
+    // Try to calculate and print the median, handle potential errors
     try {
-        double median = findMedianCombined(scores1, scores2);
+        double median = calculateMedianMerged(classScores1, classScores2);
         cout << "Median = " << median << endl;
     } catch (const invalid_argument& e) {
         cerr << e.what() << endl;
